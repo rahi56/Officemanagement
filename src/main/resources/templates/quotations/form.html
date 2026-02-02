@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
+
+<head>
+    <title>New Quotation - Office Management</title>
+</head>
+
+<body>
+    <div th:fragment="content">
+        <div style="margin-bottom: 2rem;">
+            <a th:href="@{/quotations}" style="color: var(--text-muted); text-decoration: none;">&larr; Back to
+                Quotations</a>
+        </div>
+
+        <h1 class="card-title" style="font-size: 2rem; margin-bottom: 2rem;">New Quotation</h1>
+
+        <div class="card">
+            <form id="quoteForm">
+                <div class="form-group" style="max-width: 400px;">
+                    <label class="form-label">Select Client</label>
+                    <select class="form-control" id="clientSelect">
+                        <option value="">-- Select Client --</option>
+                        <option th:each="client : ${clients}" th:value="${client.id}" th:text="${client.name}"
+                            th:selected="${client.id == selectedClientId}"></option>
+                    </select>
+                </div>
+
+                <h3 style="margin-top: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+                    Items</h3>
+
+                <table class="table" id="itemsTable">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th style="width: 100px;">Quantity</th>
+                            <th style="width: 150px;">Unit Price</th>
+                            <th style="width: 150px;">Total</th>
+                            <th style="width: 50px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsBody">
+                        <!-- Items will be added here -->
+                    </tbody>
+                </table>
+
+                <button type="button" class="btn" style="background: #f3f4f6; margin-top: 1rem;" onclick="addItem()">+
+                    Add Item</button>
+
+                <div style="margin-top: 2rem; text-align: right;">
+                    <div style="font-size: 1.25rem; font-weight: 700;">Total: $<span id="grandTotal">0.00</span></div>
+                </div>
+
+                <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem;">
+                    <button type="button" class="btn btn-primary" onclick="generatePDF()">Generate Quotation</button>
+                </div>
+            </form>
+        </div>
+
+        <script>
+            function addItem() {
+                const tbody = document.getElementById('itemsBody');
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><input type="text" class="form-control" placeholder="Item description"></td>
+                    <td><input type="number" class="form-control" value="1" min="1" onchange="calcRow(this)"></td>
+                    <td><input type="number" class="form-control" value="0.00" step="0.01" min="0" onchange="calcRow(this)"></td>
+                    <td class="row-total">$0.00</td>
+                    <td><button type="button" class="btn btn-danger" style="padding: 0.25rem 0.5rem;" onclick="removeRow(this)">×</button></td>
+                `;
+                tbody.appendChild(tr);
+            }
+
+            function calcRow(input) {
+                const tr = input.closest('tr');
+                const qty = parseFloat(tr.querySelector('td:nth-child(2) input').value) || 0;
+                const price = parseFloat(tr.querySelector('td:nth-child(3) input').value) || 0;
+                const total = qty * price;
+                tr.querySelector('.row-total').textContent = '$' + total.toFixed(2);
+                calcGrandTotal();
+            }
+
+            function removeRow(btn) {
+                btn.closest('tr').remove();
+                calcGrandTotal();
+            }
+
+            function calcGrandTotal() {
+                let total = 0;
+                document.querySelectorAll('.row-total').forEach(td => {
+                    total += parseFloat(td.textContent.replace('$', ''));
+                });
+                document.getElementById('grandTotal').textContent = total.toFixed(2);
+            }
+
+            function generatePDF() {
+                alert("This would generate and download a PDF in a real implementation. For now, this is a prototype.");
+            }
+
+            // Add initial item
+            addItem();
+        </script>
+    </div>
+</body>
+
+</html>

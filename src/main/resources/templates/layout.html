@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    th:fragment="layout(content)">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office Management</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .sidebar {
+            position: relative;
+            padding-bottom: 5rem;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            background: var(--surface-color);
+        }
+
+        .user-info {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .logout-btn {
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            padding: 0.5rem 0;
+            color: var(--danger-color);
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .logout-btn:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span>🏢 Office Manager</span>
+            </div>
+            <nav>
+                <a th:href="@{/}" class="nav-link" th:classappend="${activePage == 'dashboard' ? 'active' : ''}">
+                    Dashboard
+                </a>
+                <a th:href="@{/clients}" class="nav-link" th:classappend="${activePage == 'clients' ? 'active' : ''}">
+                    Clients
+                </a>
+                <a th:href="@{/calculator}" class="nav-link"
+                    th:classappend="${activePage == 'calculator' ? 'active' : ''}">
+                    Calculator
+                </a>
+                <a th:href="@{/quotations}" class="nav-link"
+                    th:classappend="${activePage == 'quotations' ? 'active' : ''}">
+                    Quotations
+                </a>
+                <a th:href="@{/finance/bank}" class="nav-link"
+                    th:classappend="${activePage == 'finance' ? 'active' : ''}">
+                    Bank Ledger
+                </a>
+                <a href="https://www.kiteglobalkg.com/" target="_blank" class="nav-link">
+                    🌐 KiteGlobal KG
+                </a>
+            </nav>
+
+            <div class="sidebar-footer" sec:authorize="isAuthenticated()">
+                <span class="user-info">Logged in as: <strong sec:authentication="name">User</strong></span>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="logout-btn">Logout</button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div th:replace="${content}"></div>
+        </main>
+    </div>
+</body>
+
+</html>

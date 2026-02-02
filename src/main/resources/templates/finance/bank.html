@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
+
+<head>
+    <title>Office Bank Transactions - Finance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div th:fragment="content">
+        <style>
+            :root {
+                --bank-blue: #0f172a;
+                --bank-gold: #fbbf24;
+                --bank-green: #10b981;
+                --bank-red: #ef4444;
+                --bank-bg: #f1f5f9;
+                --bank-card: #ffffff;
+                --bank-border: #e2e8f0;
+                --bank-text: #334155;
+            }
+
+            .bank-container {
+                font-family: 'Outfit', sans-serif;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 1rem;
+            }
+
+            .bank-header {
+                margin-bottom: 2rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-end;
+            }
+
+            .bank-title h1 {
+                font-size: 2rem;
+                font-weight: 800;
+                color: var(--bank-blue);
+                margin: 0;
+            }
+
+            .bank-title p {
+                color: #64748b;
+                margin: 5px 0 0 0;
+            }
+
+            /* Stats Cards */
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1.5rem;
+                margin-bottom: 2.5rem;
+            }
+
+            .stat-card-premium {
+                background: white;
+                padding: 1.5rem;
+                border-radius: 16px;
+                border: 1px solid var(--bank-border);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .stat-card-premium::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 4px;
+                height: 100%;
+            }
+
+            .stat-incoming::after {
+                background: var(--bank-green);
+            }
+
+            .stat-outgoing::after {
+                background: var(--bank-red);
+            }
+
+            .stat-balance::after {
+                background: var(--bank-blue);
+            }
+
+            .stat-label-premium {
+                font-size: 0.875rem;
+                font-weight: 600;
+                color: #64748b;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-bottom: 0.5rem;
+            }
+
+            .stat-value-premium {
+                font-size: 1.75rem;
+                font-weight: 800;
+                color: var(--bank-blue);
+            }
+
+            /* Transaction Section */
+            .bank-card-main {
+                background: white;
+                border-radius: 20px;
+                border: 1px solid var(--bank-border);
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+            }
+
+            .bank-card-header {
+                padding: 1.5rem 2rem;
+                border-bottom: 1px solid var(--bank-border);
+                background: #f8fafc;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .bank-card-title {
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: var(--bank-blue);
+                margin: 0;
+            }
+
+            /* Table Styles */
+            .bank-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .bank-table th {
+                background: #f8fafc;
+                padding: 1rem 1.5rem;
+                text-align: left;
+                font-size: 0.75rem;
+                font-weight: 700;
+                color: #64748b;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                border-bottom: 1px solid var(--bank-border);
+            }
+
+            .bank-table td {
+                padding: 1.25rem 1.5rem;
+                border-bottom: 1px solid var(--bank-border);
+                font-size: 0.9375rem;
+                color: #334155;
+            }
+
+            .bank-table tr:hover {
+                background: #f8fafc;
+            }
+
+            .type-badge {
+                padding: 0.35rem 0.75rem;
+                border-radius: 9999px;
+                font-size: 0.75rem;
+                font-weight: 700;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.4rem;
+            }
+
+            .badge-incoming {
+                background: #ecfdf5;
+                color: #059669;
+            }
+
+            .badge-outgoing {
+                background: #fef2f2;
+                color: #dc2626;
+            }
+
+            .amount-incoming {
+                color: #059669;
+                font-weight: 700;
+            }
+
+            .amount-outgoing {
+                color: #dc2626;
+                font-weight: 700;
+            }
+
+            /* New Transaction Form */
+            .bank-form-section {
+                padding: 2rem;
+                background: #f8fafc;
+                border-top: 1px solid var(--bank-border);
+            }
+
+            .premium-input {
+                width: 100%;
+                padding: 0.75rem 1rem;
+                border-radius: 8px;
+                border: 1px solid var(--bank-border);
+                font-family: inherit;
+                font-size: 0.9rem;
+                transition: border-color 0.2s;
+            }
+
+            .premium-input:focus {
+                outline: none;
+                border-color: var(--bank-blue);
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            }
+
+            .btn-bank {
+                background: var(--bank-blue);
+                color: white;
+                padding: 0.75rem 1.5rem;
+                border-radius: 8px;
+                font-weight: 700;
+                border: none;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .btn-bank:hover {
+                background: #1e293b;
+                transform: translateY(-1px);
+            }
+
+            .delete-link {
+                color: #94a3b8;
+                transition: color 0.2s;
+            }
+
+            .delete-link:hover {
+                color: var(--bank-red);
+            }
+        </style>
+
+        <div class="bank-container">
+            <div class="bank-header">
+                <div class="bank-title">
+                    <h1>Office Bank Ledger</h1>
+                    <p>Track all official incoming and outgoing transactions.</p>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card-premium stat-balance">
+                    <div class="stat-label-premium">Current Balance</div>
+                    <div class="stat-value-premium"
+                        th:text="${'USD ' + #numbers.formatDecimal(balance, 1, 'COMMA', 2, 'POINT')}">USD 0.00</div>
+                </div>
+                <div class="stat-card-premium stat-incoming">
+                    <div class="stat-label-premium">Total Incoming</div>
+                    <div class="stat-value-premium"
+                        th:text="${'USD ' + #numbers.formatDecimal(totalIncoming, 1, 'COMMA', 2, 'POINT')}">USD 0.00
+                    </div>
+                </div>
+                <div class="stat-card-premium stat-outgoing">
+                    <div class="stat-label-premium">Total Outgoing</div>
+                    <div class="stat-value-premium"
+                        th:text="${'USD ' + #numbers.formatDecimal(totalOutgoing, 1, 'COMMA', 2, 'POINT')}">USD 0.00
+                    </div>
+                </div>
+            </div>
+
+            <div class="bank-card-main">
+                <div class="bank-card-header">
+                    <h2 class="bank-card-title">Transaction History</h2>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="bank-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Source / Recipient</th>
+                                <th>Category</th>
+                                <th>Type</th>
+                                <th style="text-align: right;">Amount</th>
+                                <th style="width: 50px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="txn : ${transactions}">
+                                <td th:text="${txn.date}">2026-02-02</td>
+                                <td style="font-weight: 600;" th:text="${txn.description}">Office Rent</td>
+                                <td th:text="${txn.sourceOrRecipient}">Property Manager</td>
+                                <td>
+                                    <span style="opacity: 0.7;" th:text="${txn.category ?: 'General'}">Category</span>
+                                </td>
+                                <td>
+                                    <span
+                                        th:class="'type-badge ' + (${txn.type == 'INCOMING' ? 'badge-incoming' : 'badge-outgoing'})">
+                                        <span th:text="${txn.type}">INCOMING</span>
+                                    </span>
+                                </td>
+                                <td style="text-align: right; font-family: 'JetBrains Mono', monospace;"
+                                    th:class="${txn.type == 'INCOMING' ? 'amount-incoming' : 'amount-outgoing'}"
+                                    th:text="${(txn.type == 'INCOMING' ? '+ ' : '- ') + 'USD ' + #numbers.formatDecimal(txn.amount, 1, 'COMMA', 2, 'POINT')}">
+                                    USD 0.00
+                                </td>
+                                <td>
+                                    <a th:href="@{/finance/bank/delete/{id}(id=${txn.id})}" class="delete-link"
+                                        onclick="return confirm('Delete this record?')">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <polyline points="3 6 5 6 21 6"></polyline>
+                                            <path
+                                                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                            </path>
+                                        </svg>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(transactions)}">
+                                <td colspan="7" style="text-align: center; padding: 4rem; color: #94a3b8;">
+                                    No transactions recorded in the bank ledger yet.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="bank-form-section">
+                    <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--bank-blue);">ADD
+                        NEW TRANSACTION</h3>
+                    <form th:action="@{/finance/bank/add}" method="post" th:object="${newTransaction}">
+                        <div
+                            style="display: grid; grid-template-columns: 2fr 2fr 1.5fr 1fr 1fr auto; gap: 1rem; align-items: flex-end;">
+                            <div>
+                                <label
+                                    style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 0.5rem;">DESCRIPTION</label>
+                                <input type="text" th:field="*{description}" class="premium-input"
+                                    placeholder="e.g. Monthly Revenue" required>
+                            </div>
+                            <div>
+                                <label
+                                    style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 0.5rem;">SOURCE
+                                    / RECIPIENT</label>
+                                <input type="text" th:field="*{sourceOrRecipient}" class="premium-input"
+                                    placeholder="e.g. Client Name or Vendor">
+                            </div>
+                            <div>
+                                <label
+                                    style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 0.5rem;">CATEGORY</label>
+                                <input type="text" th:field="*{category}" class="premium-input"
+                                    placeholder="e.g. Sales, Rent, Tax">
+                            </div>
+                            <div>
+                                <label
+                                    style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 0.5rem;">TYPE</label>
+                                <select th:field="*{type}" class="premium-input" style="padding-right: 0.5rem;">
+                                    <option value="INCOMING">INCOMING</option>
+                                    <option value="OUTGOING">OUTGOING</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label
+                                    style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 0.5rem;">AMOUNT</label>
+                                <input type="number" th:field="*{amount}" step="0.01" class="premium-input"
+                                    placeholder="0.00" required>
+                            </div>
+                            <button type="submit" class="btn-bank">ADD RECORD</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

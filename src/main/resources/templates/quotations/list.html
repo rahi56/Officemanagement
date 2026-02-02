@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
+
+<head>
+    <title>Quotations - Office Management</title>
+</head>
+
+<body>
+    <div th:fragment="content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h1 class="card-title" style="font-size: 2rem; margin: 0;">Quotations</h1>
+            <a th:href="@{/quotations/new}" class="btn btn-primary">+ Create Quotation</a>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title">Investment Quotations</h3>
+            <table class="table" th:if="${not #lists.isEmpty(investmentQuotations)}">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Client</th>
+                        <th>Family Structure</th>
+                        <th>Total Amount</th>
+                        <th style="width: 100px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="q : ${investmentQuotations}">
+                        <td th:text="${#temporals.format(q.createdAt, 'dd/MM/yyyy')}"></td>
+                        <td
+                            th:text="${q.clientName != null ? q.clientName : (q.client != null ? q.client.name : 'N/A')}">
+                        </td>
+                        <td th:text="${q.familyStructure}"></td>
+                        <td th:text="${'US$' + #numbers.formatDecimal(q.totalAmount, 1, 'COMMA', 2, 'POINT')}"></td>
+                        <td>
+                            <div style="display: flex; gap: 5px;">
+                                <a th:href="@{/quotations/investment/view(id=${q.id})}" class="btn"
+                                    style="background: #eff6ff; color: #2563eb; padding: 0.25rem 0.5rem; font-size: 0.8rem;">View</a>
+                                <a th:href="@{/calculator(id=${q.id})}" class="btn"
+                                    style="background: #fdf2f2; color: #991b1b; padding: 0.25rem 0.5rem; font-size: 0.8rem;">Edit</a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="text-muted" th:if="${#lists.isEmpty(investmentQuotations)}">No investment quotations saved yet.
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

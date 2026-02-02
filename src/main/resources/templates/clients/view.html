@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
+
+<head>
+    <title th:text="${client.name} + ' - Client Details'">Client Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div th:fragment="content">
+        <style>
+            :root {
+                --premium-blue: #2563eb;
+                --premium-bg: #f8fafc;
+                --premium-card: #ffffff;
+                --premium-text: #0f172a;
+                --premium-muted: #64748b;
+                --premium-border: #e2e8f0;
+                --premium-success: #10b981;
+                --premium-danger: #ef4444;
+                --premium-gold: #d4af37;
+                --premium-dark: #1e293b;
+            }
+
+            .client-premium-container {
+                font-family: 'Outfit', sans-serif;
+                color: var(--premium-text);
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 1rem;
+            }
+
+            .header-nav {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 2rem;
+            }
+
+            .back-link {
+                color: var(--premium-muted);
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                font-weight: 500;
+                transition: color 0.2s;
+            }
+
+            .back-link:hover {
+                color: var(--premium-blue);
+            }
+
+            .action-group {
+                display: flex;
+                gap: 0.75rem;
+            }
+
+            .btn-premium {
+                padding: 0.6rem 1.2rem;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 0.875rem;
+                text-decoration: none;
+                transition: all 0.2s;
+                cursor: pointer;
+                border: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .btn-primary-premium {
+                background: var(--premium-blue);
+                color: white;
+            }
+
+            .btn-primary-premium:hover {
+                background: #1d4ed8;
+                transform: translateY(-1px);
+            }
+
+            .btn-secondary-premium {
+                background: white;
+                color: var(--premium-dark);
+                border: 1px solid var(--premium-border);
+            }
+
+            .btn-secondary-premium:hover {
+                background: var(--premium-bg);
+            }
+
+            .btn-danger-premium {
+                background: #fef2f2;
+                color: var(--premium-danger);
+                border: 1px solid #fee2e2;
+            }
+
+            .btn-danger-premium:hover {
+                background: #fee2e2;
+            }
+
+            /* Dashboard Layout */
+            .client-dashboard {
+                display: grid;
+                grid-template-columns: 350px 1fr;
+                gap: 2rem;
+            }
+
+            .card-premium {
+                background: var(--premium-card);
+                border-radius: 16px;
+                border: 1px solid var(--premium-border);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+                overflow: hidden;
+                margin-bottom: 2rem;
+            }
+
+            .card-header-premium {
+                padding: 1.5rem;
+                border-bottom: 1px solid var(--premium-border);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .card-title-premium {
+                font-size: 1.125rem;
+                font-weight: 700;
+                margin: 0;
+                color: var(--premium-dark);
+            }
+
+            .card-body-premium {
+                padding: 1.5rem;
+            }
+
+            /* Profile Info */
+            .profile-hero {
+                text-align: center;
+                padding: 2rem 1.5rem;
+                background: linear-gradient(to bottom, #f1f5f9, white);
+                border-bottom: 1px solid var(--premium-border);
+            }
+
+            .avatar-circle {
+                width: 80px;
+                height: 80px;
+                background: var(--premium-blue);
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 2rem;
+                font-weight: 700;
+                margin: 0 auto 1rem;
+                box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+            }
+
+            .profile-name {
+                font-size: 1.5rem;
+                font-weight: 800;
+                margin-bottom: 0.25rem;
+            }
+
+            .profile-status {
+                display: inline-block;
+                padding: 0.25rem 0.75rem;
+                border-radius: 9999px;
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+
+            .status-active {
+                background: #ecfdf5;
+                color: #065f46;
+            }
+
+            .status-lead {
+                background: #eff6ff;
+                color: #1e40af;
+            }
+
+            .status-inactive {
+                background: #f1f5f9;
+                color: #475569;
+            }
+
+            .info-item {
+                margin-bottom: 1.25rem;
+            }
+
+            .info-label {
+                font-size: 0.75rem;
+                font-weight: 600;
+                color: var(--premium-muted);
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-bottom: 0.25rem;
+            }
+
+            .info-value {
+                font-size: 0.9375rem;
+                font-weight: 500;
+                color: var(--premium-dark);
+            }
+
+            /* Tables & Lists */
+            .premium-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .premium-table th {
+                text-align: left;
+                padding: 1rem;
+                font-size: 0.75rem;
+                font-weight: 600;
+                color: var(--premium-muted);
+                text-transform: uppercase;
+                border-bottom: 1px solid var(--premium-border);
+            }
+
+            .premium-table td {
+                padding: 1rem;
+                font-size: 0.875rem;
+                border-bottom: 1px solid var(--premium-border);
+            }
+
+            .premium-table tr:last-child td {
+                border-bottom: none;
+            }
+
+            .financial-badge {
+                padding: 0.25rem 0.5rem;
+                border-radius: 4px;
+                font-size: 0.75rem;
+                font-weight: 700;
+            }
+
+            .badge-income {
+                background: #ecfdf5;
+                color: #059669;
+            }
+
+            .badge-expense {
+                background: #fef2f2;
+                color: #dc2626;
+            }
+
+            /* Upload Area */
+            .upload-form {
+                display: flex;
+                gap: 0.5rem;
+                background: #f8fafc;
+                padding: 0.75rem;
+                border-radius: 12px;
+                border: 1px dashed var(--premium-border);
+            }
+
+            .file-input-wrapper {
+                position: relative;
+                flex: 1;
+            }
+
+            .file-input-custom {
+                font-size: 0.8rem;
+                width: 100%;
+            }
+
+            /* Responsive */
+            @media (max-width: 1024px) {
+                .client-dashboard {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+
+        <div class="client-premium-container">
+            <div class="header-nav">
+                <a th:href="@{/clients}" class="back-link">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    BACK TO DIRECTORY
+                </a>
+                <div class="action-group">
+                    <a th:href="@{/clients/edit/{id}(id=${client.id})}" class="btn-premium btn-secondary-premium">EDIT
+                        PROFILE</a>
+                    <a th:href="@{/quotations/new(clientId=${client.id})}" class="btn-premium btn-primary-premium">NEW
+                        QUOTATION</a>
+                    <a th:href="@{/clients/delete/{id}(id=${client.id})}" class="btn-premium btn-danger-premium"
+                        onclick="return confirm('CRITICAL: This will permanently delete the client and all associated records. Proceed?')">DELETE</a>
+                </div>
+            </div>
+
+            <div class="client-dashboard">
+                <!-- Sidebar: Profile & Info -->
+                <div class="sidebar">
+                    <div class="card-premium">
+                        <div class="profile-hero">
+                            <div class="avatar-circle" th:text="${#strings.substring(client.name,0,1)}">C</div>
+                            <h1 class="profile-name" th:text="${client.name}">Client Name</h1>
+
+                            <!-- Quick Status Update Form -->
+                            <form th:action="@{/clients/{id}/quick-update(id=${client.id})}" method="post"
+                                style="display: inline-block;">
+                                <select name="status" onchange="this.form.submit()" th:class="'profile-status ' + 
+                                          (${client.status == 'Active' ? 'status-active' : 
+                                            (client.status == 'Lead' ? 'status-lead' : 'status-inactive')})"
+                                    style="border: none; cursor: pointer; appearance: none; -webkit-appearance: none; padding-right: 1.5rem; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 0.5rem center; font-family: inherit;">
+                                    <option value="Active" th:selected="${client.status == 'Active'}">ACTIVE</option>
+                                    <option value="Lead" th:selected="${client.status == 'Lead'}">LEAD</option>
+                                    <option value="Inactive" th:selected="${client.status == 'Inactive'}">INACTIVE
+                                    </option>
+                                </select>
+                            </form>
+                        </div>
+                        <div class="card-body-premium">
+                            <div class="info-item">
+                                <div class="info-label">Email Address</div>
+                                <div class="info-value" th:text="${client.email ?: 'N/A'}">email@example.com</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Phone Number</div>
+                                <div class="info-value" th:text="${client.phone ?: 'N/A'}">+1 234 567 890</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Channel Source</div>
+                                <div class="info-value" th:text="${client.channelName ?: 'Direct'}">YouTube</div>
+                            </div>
+                            <div class="info-item" style="margin-bottom: 0;">
+                                <div class="info-label">Physical Address</div>
+                                <div class="info-value" th:text="${client.address ?: 'No address provided'}">123 Street,
+                                    City</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-premium">
+                        <div class="card-header-premium">
+                            <h2 class="card-title-premium">Internal Notes</h2>
+                        </div>
+                        <div class="card-body-premium">
+                            <form th:action="@{/clients/{id}/quick-update(id=${client.id})}" method="post">
+                                <textarea name="notes"
+                                    style="width: 100%; border: 1px solid var(--premium-border); border-radius: 8px; padding: 0.75rem; font-size: 0.9rem; line-height: 1.6; color: var(--premium-dark); min-height: 120px; font-family: inherit; resize: vertical;"
+                                    th:text="${client.notes}" placeholder="Enter internal notes here..."></textarea>
+                                <button type="submit" class="btn-premium btn-secondary-premium"
+                                    style="width: 100%; margin-top: 0.75rem; justify-content: center;">UPDATE
+                                    NOTES</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content: Docs & Finance -->
+                <div class="main-content">
+                    <!-- Documents Section -->
+                    <div class="card-premium">
+                        <div class="card-header-premium">
+                            <h2 class="card-title-premium">Document Vault</h2>
+                            <form th:action="@{/clients/{id}/upload(id=${client.id})}" method="post"
+                                enctype="multipart/form-data" class="upload-form">
+                                <div class="file-input-wrapper">
+                                    <input type="file" name="file" required class="file-input-custom" />
+                                </div>
+                                <button type="submit" class="btn-premium btn-primary-premium"
+                                    style="padding: 0.4rem 0.8rem; font-size: 0.75rem;">UPLOAD</button>
+                            </form>
+                        </div>
+                        <div class="card-body-premium" style="padding: 0;">
+                            <table class="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>File Name</th>
+                                        <th>Uploaded Date</th>
+                                        <th style="text-align: right;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="doc : ${client.documents}">
+                                        <td style="font-weight: 500;">
+                                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                    stroke-linejoin="round" style="color: var(--premium-muted)">
+                                                    <path
+                                                        d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z">
+                                                    </path>
+                                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                                </svg>
+                                                <span th:text="${doc.fileName}">document.pdf</span>
+                                            </div>
+                                        </td>
+                                        <td th:text="${#temporals.format(doc.uploadDate, 'dd MMM yyyy, HH:mm')}">Date
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <span
+                                                style="color: var(--premium-success); font-size: 0.75rem; font-weight: 700;">VERIFIED</span>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(client.documents)}">
+                                        <td colspan="3"
+                                            style="text-align: center; padding: 3rem; color: var(--premium-muted);">
+                                            <div style="margin-bottom: 0.5rem;">
+                                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                                    stroke-linejoin="round" style="opacity: 0.5">
+                                                    <path
+                                                        d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z">
+                                                    </path>
+                                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                                </svg>
+                                            </div>
+                                            No documents uploaded to vault.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Financial Records Section -->
+                    <div class="card-premium">
+                        <div class="card-header-premium">
+                            <h2 class="card-title-premium">Financial History</h2>
+                        </div>
+                        <div class="card-body-premium" style="padding: 0;">
+                            <table class="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>Description</th>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th style="text-align: right;">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="txn : ${client.transactions}">
+                                        <td th:text="${txn.description}" style="font-weight: 500;">Payment for visa</td>
+                                        <td th:text="${txn.date}">2026-02-02</td>
+                                        <td>
+                                            <span
+                                                th:class="'financial-badge ' + (${txn.type == 'INCOME' ? 'badge-income' : 'badge-expense'})"
+                                                th:text="${txn.type}">INCOME</span>
+                                        </td>
+                                        <td style="text-align: right; font-weight: 700; font-family: monospace;"
+                                            th:text="${'USD ' + #numbers.formatDecimal(txn.amount, 1, 'COMMA', 2, 'POINT')}">
+                                            USD 0.00</td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(client.transactions)}">
+                                        <td colspan="4"
+                                            style="text-align: center; padding: 3rem; color: var(--premium-muted);">
+                                            No financial records found.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Add Transaction Form (Premium Styled) -->
+                        <div style="background: #f8fafc; padding: 1.5rem; border-top: 1px solid var(--premium-border);">
+                            <h3
+                                style="font-size: 0.875rem; font-weight: 700; margin-bottom: 1rem; color: var(--premium-muted);">
+                                ADD RECORD</h3>
+                            <form th:action="@{/clients/{id}/transaction(id=${client.id})}" method="post">
+                                <div
+                                    style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 0.75rem; align-items: flex-end;">
+                                    <div class="form-group" style="margin: 0;">
+                                        <input type="text" name="description" class="form-control"
+                                            placeholder="Transaction Description" required
+                                            style="font-size: 0.875rem; padding: 0.5rem; border-radius: 6px;">
+                                    </div>
+                                    <div class="form-group" style="margin: 0;">
+                                        <input type="number" name="amount" class="form-control" placeholder="Amount"
+                                            step="0.01" required
+                                            style="font-size: 0.875rem; padding: 0.5rem; border-radius: 6px;">
+                                    </div>
+                                    <div class="form-group" style="margin: 0;">
+                                        <select name="type" class="form-control"
+                                            style="font-size: 0.875rem; padding: 0.5rem; border-radius: 6px;">
+                                            <option value="INCOME">INCOME</option>
+                                            <option value="EXPENSE">EXPENSE</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group" style="margin: 0;">
+                                        <input type="date" name="date" class="form-control" required
+                                            style="font-size: 0.875rem; padding: 0.5rem; border-radius: 6px;">
+                                    </div>
+                                    <button type="submit" class="btn-premium btn-primary-premium"
+                                        style="height: 38px;">ADD</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

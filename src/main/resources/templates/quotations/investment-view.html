@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
+
+<head>
+    <title>Investment Quotation - Office Management</title>
+</head>
+
+<body>
+    <div th:fragment="content">
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+            :root {
+                --primary-gold: #c5a044;
+                --primary-dark: #0f172a;
+                --secondary-dark: #1e293b;
+                --border-color: #e2e8f0;
+                --bg-light: #f8fafc;
+                --text-main: #1e293b;
+                --text-muted: #64748b;
+            }
+
+            .quote-wrapper {
+                background: #f1f5f9;
+                padding: 40px 20px;
+                min-height: 100vh;
+                font-family: 'Outfit', sans-serif;
+            }
+
+            .quote-actions {
+                max-width: 1000px;
+                margin: 0 auto 24px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .btn-action {
+                padding: 10px 20px;
+                border-radius: 8px;
+                font-weight: 600;
+                text-decoration: none;
+                transition: all 0.2s;
+                cursor: pointer;
+            }
+
+            .btn-back {
+                color: var(--text-muted);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .btn-back:hover {
+                color: var(--primary-dark);
+            }
+
+            .btn-print-premium {
+                background: var(--primary-dark);
+                color: white;
+                border: none;
+                box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+            }
+
+            .btn-print-premium:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 6px 16px rgba(15, 23, 42, 0.2);
+            }
+
+            .quote-card {
+                background: white;
+                max-width: 1000px;
+                margin: 0 auto;
+                padding: 60px;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+                border-radius: 2px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .quote-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 6px;
+                background: linear-gradient(to right, var(--primary-gold), #ecc94b);
+            }
+
+            .brand-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 60px;
+            }
+
+            .brand-logo h2 {
+                margin: 0;
+                font-size: 2rem;
+                font-weight: 800;
+                letter-spacing: -1px;
+                color: var(--primary-dark);
+                text-transform: uppercase;
+            }
+
+            .brand-logo p {
+                margin: 5px 0 0;
+                color: var(--primary-gold);
+                font-weight: 600;
+                font-size: 0.85rem;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+            }
+
+            .quote-badge {
+                text-align: right;
+            }
+
+            .quote-badge h1 {
+                margin: 0;
+                font-size: 3rem;
+                font-weight: 200;
+                color: var(--primary-dark);
+                line-height: 1;
+                margin-bottom: 10px;
+            }
+
+            .quote-info-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 40px;
+                margin-bottom: 50px;
+                padding-bottom: 30px;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .info-block label {
+                display: block;
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 1.5px;
+                color: var(--text-muted);
+                margin-bottom: 12px;
+                font-weight: 700;
+            }
+
+            .info-block .val-main {
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: var(--primary-dark);
+                margin-bottom: 4px;
+            }
+
+            .info-block .val-sub {
+                font-size: 0.95rem;
+                color: var(--text-muted);
+            }
+
+            .premium-table {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
+                margin-bottom: 30px;
+            }
+
+            .premium-table th {
+                background: var(--bg-light);
+                color: var(--primary-dark);
+                padding: 16px 20px;
+                font-size: 0.8rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                text-align: left;
+                border-bottom: 2px solid var(--primary-dark);
+            }
+
+            .premium-table td {
+                padding: 16px 20px;
+                border-bottom: 1px solid var(--border-color);
+                vertical-align: middle;
+            }
+
+            .section-divider {
+                background: var(--primary-dark);
+                color: white;
+                font-weight: 700;
+                font-size: 0.85rem;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                padding: 12px 20px !important;
+            }
+
+            .num-cell {
+                width: 40px;
+                color: var(--text-muted);
+                font-weight: 500;
+            }
+
+            .desc-cell {
+                font-weight: 500;
+            }
+
+            .rate-cell {
+                text-align: right;
+                color: var(--text-muted);
+                width: 140px;
+            }
+
+            .qty-cell {
+                text-align: center;
+                width: 80px;
+            }
+
+            .amt-cell {
+                text-align: right;
+                font-weight: 700;
+                color: var(--primary-dark);
+                width: 160px;
+            }
+
+            .subtotal-row td {
+                background: var(--bg-light);
+                border-top: 1px solid var(--primary-dark);
+                padding: 20px;
+            }
+
+            .subtotal-lbl {
+                text-align: right;
+                font-weight: 700;
+                text-transform: uppercase;
+                font-size: 0.85rem;
+            }
+
+            .subtotal-val {
+                text-align: right;
+                font-size: 1.2rem;
+                font-weight: 800;
+                color: var(--primary-dark);
+            }
+
+            .grand-total-container {
+                margin-top: 50px;
+                background: var(--primary-dark);
+                border-radius: 8px;
+                padding: 40px;
+                color: white;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2);
+            }
+
+            .total-msg {
+                font-size: 1.1rem;
+                font-weight: 300;
+                opacity: 0.8;
+            }
+
+            .total-val-box {
+                text-align: right;
+            }
+
+            .total-label {
+                font-size: 0.8rem;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+                margin-bottom: 8px;
+                display: block;
+                font-weight: 600;
+            }
+
+            .total-amount {
+                font-size: 3rem;
+                font-weight: 800;
+                line-height: 1;
+                color: var(--primary-gold);
+            }
+
+            .disclaimer-premium {
+                margin-top: 60px;
+                padding: 30px;
+                background: var(--bg-light);
+                border-radius: 12px;
+                border-left: 4px solid var(--primary-gold);
+            }
+
+            .disclaimer-premium h4 {
+                margin: 0 0 10px;
+                font-size: 0.9rem;
+                color: var(--primary-dark);
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+
+            .disclaimer-premium p {
+                margin: 0;
+                font-size: 0.85rem;
+                color: var(--text-muted);
+                line-height: 1.6;
+            }
+
+            @media print {
+                .quote-wrapper {
+                    padding: 0;
+                    background: white;
+                }
+
+                .quote-actions,
+                .btn-action {
+                    display: none !important;
+                }
+
+                .quote-card {
+                    box-shadow: none;
+                    padding: 40px;
+                    max-width: 100%;
+                    border: none;
+                }
+
+                .grand-total-container {
+                    -webkit-print-color-adjust: exact;
+                    background: #0f172a !important;
+                    color: white !important;
+                }
+
+                .section-divider {
+                    -webkit-print-color-adjust: exact;
+                    background: #0f172a !important;
+                    color: white !important;
+                }
+            }
+        </style>
+
+        <div class="quote-wrapper">
+            <div class="quote-actions">
+                <a th:href="@{/quotations}" class="btn-action btn-back">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                    Back to Quotations
+                </a>
+                <button class="btn-action btn-print-premium" onclick="window.print()">Print / Export PDF</button>
+            </div>
+
+            <div class="quote-card" id="printableArea">
+                <div class="brand-header">
+                    <div class="brand-logo">
+                        <h2>KiteGlobal KG</h2>
+                        <p>Investment Migration Solutions</p>
+                    </div>
+                    <div class="quote-badge">
+                        <h1>Quotation</h1>
+                        <span th:text="'Ref: INV-' + ${#numbers.formatInteger(quote.id, 8)}"
+                            style="font-family: monospace; font-size: 1rem; color: var(--text-muted); font-weight: 600;">REF-00000001</span>
+                    </div>
+                </div>
+
+                <div class="quote-info-grid">
+                    <div class="info-block">
+                        <label>Quoted To</label>
+                        <div class="val-main"
+                            th:text="${not #strings.isEmpty(quote.clientName) ? quote.clientName : (quote.client != null ? quote.client.name : 'Valued Interest')}">
+                            Name</div>
+                        <div class="val-sub" th:text="${quote.familyStructure}">Structure</div>
+                    </div>
+                    <div class="info-block" style="text-align: right;">
+                        <label>Issue Date</label>
+                        <div class="val-main" th:text="${#temporals.format(quote.createdAt, 'MMMM dd, yyyy')}">Date
+                        </div>
+                        <div class="val-sub">Valid for 30 Days</div>
+                    </div>
+                </div>
+
+                <table class="premium-table">
+                    <thead>
+                        <tr>
+                            <th class="num-cell">#</th>
+                            <th class="desc-cell">Description</th>
+                            <th class="rate-cell">Rate (USD)</th>
+                            <th class="qty-cell">Qty</th>
+                            <th class="amt-cell">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="5" class="section-divider">Phase 1: Before Approval</td>
+                        </tr>
+                        <tr>
+                            <td class="num-cell">01</td>
+                            <td class="desc-cell">Application Fee (Standard)</td>
+                            <td class="rate-cell"
+                                th:text="${#numbers.formatDecimal(quote.appFeeRate, 1, 'COMMA', 2, 'POINT')}">1,500.00
+                            </td>
+                            <td class="qty-cell" th:text="${quote.appFeeQty}">1</td>
+                            <td class="amt-cell"
+                                th:text="${#numbers.formatDecimal(quote.appFeeRate * quote.appFeeQty, 1, 'COMMA', 2, 'POINT')}">
+                                1,500.00</td>
+                        </tr>
+                        <tr>
+                            <td class="num-cell">02</td>
+                            <td class="desc-cell">Processing Fee (17yrs+)</td>
+                            <td class="rate-cell"
+                                th:text="${#numbers.formatDecimal(quote.procFee17Rate, 1, 'COMMA', 2, 'POINT')}">
+                                1,500.00</td>
+                            <td class="qty-cell" th:text="${quote.procFee17Qty}">1</td>
+                            <td class="amt-cell"
+                                th:text="${#numbers.formatDecimal(quote.procFee17Rate * quote.procFee17Qty, 1, 'COMMA', 2, 'POINT')}">
+                                1,500.00</td>
+                        </tr>
+                        <tr th:if="${quote.procFee0Qty > 0}">
+                            <td class="num-cell">03</td>
+                            <td class="desc-cell">Processing Fee (0-16yrs)</td>
+                            <td class="rate-cell"
+                                th:text="${#numbers.formatDecimal(quote.procFee0Rate, 1, 'COMMA', 2, 'POINT')}">500.00
+                            </td>
+                            <td class="qty-cell" th:text="${quote.procFee0Qty}">0</td>
+                            <td class="amt-cell"
+                                th:text="${#numbers.formatDecimal(quote.procFee0Rate * quote.procFee0Qty, 1, 'COMMA', 2, 'POINT')}">
+                                0.00</td>
+                        </tr>
+                        <tr>
+                            <td class="num-cell">04</td>
+                            <td class="desc-cell">Due Diligence Fee (17yrs+)</td>
+                            <td class="rate-cell"
+                                th:text="${#numbers.formatDecimal(quote.ddFee17Rate, 1, 'COMMA', 2, 'POINT')}">5,000.00
+                            </td>
+                            <td class="qty-cell" th:text="${quote.ddFee17Qty}">1</td>
+                            <td class="amt-cell"
+                                th:text="${#numbers.formatDecimal(quote.ddFee17Rate * quote.ddFee17Qty, 1, 'COMMA', 2, 'POINT')}">
+                                5,000.00</td>
+                        </tr>
+                        <tr th:if="${quote.ddFeeNonAppQty > 0}">
+                            <td class="num-cell">05</td>
+                            <td class="desc-cell">Due Diligence Fee (Non-Applicant)</td>
+                            <td class="rate-cell"
+                                th:text="${#numbers.formatDecimal(quote.ddFeeNonAppRate, 1, 'COMMA', 2, 'POINT')}">
+                                8,000.00</td>
+                            <td class="qty-cell" th:text="${quote.ddFeeNonAppQty}">0</td>
+                            <td class="amt-cell"
+                                th:text="${#numbers.formatDecimal(quote.ddFeeNonAppRate * quote.ddFeeNonAppQty, 1, 'COMMA', 2, 'POINT')}">
+                                0.00</td>
+                        </tr>
+                        <tr>
+                            <td class="num-cell">06</td>
+                            <td class="desc-cell">Interview Fee (per person)</td>
+                            <td class="rate-cell"
+                                th:text="${#numbers.formatDecimal(quote.interviewFeeRate, 1, 'COMMA', 2, 'POINT')}">
+                                1,000.00</td>
+                            <td class="qty-cell" th:text="${quote.interviewFeeQty}">1</td>
+                            <td class="amt-cell"
+                                th:text="${#numbers.formatDecimal(quote.interviewFeeRate * quote.interviewFeeQty, 1, 'COMMA', 2, 'POINT')}">
+                                1,000.00</td>
+                        </tr>
+                        <tr>
+                            <td class="num-cell">07</td>
+                            <td class="desc-cell">Legal & Professional Fee</td>
+                            <td class="rate-cell"
+                                th:text="${#numbers.formatDecimal(quote.legalFee, 1, 'COMMA', 2, 'POINT')}">6,000.00
+                            </td>
+                            <td class="qty-cell">1</td>
+                            <td class="amt-cell"
+                                th:text="${#numbers.formatDecimal(quote.legalFee, 1, 'COMMA', 2, 'POINT')}">6,000.00
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="num-cell">08</td>
+                            <td class="desc-cell">Advance Payment (10% Investment)</td>
+                            <td class="rate-cell"
+                                th:text="${#numbers.formatDecimal(quote.totalInvestment, 1, 'COMMA', 2, 'POINT')}">
+                                270,000.00</td>
+                            <td class="qty-cell">10%</td>
+                            <td class="amt-cell"
+                                th:text="${#numbers.formatDecimal(quote.totalInvestment * quote.advancePaymentRate, 1, 'COMMA', 2, 'POINT')}">
+                                27,000.00</td>
+                        </tr>
+                        <tr>
+                            <td class="num-cell">09</td>
+                            <td class="desc-cell">Bank Charges & VAT</td>
+                            <td class="rate-cell">-</td>
+                            <td class="qty-cell">1</td>
+                            <td class="amt-cell"
+                                th:text="${#numbers.formatDecimal(quote.bankChargesAndVat1, 1, 'COMMA', 2, 'POINT')}">
+                                603.68</td>
+                        </tr>
+                        <tr class="subtotal-row">
+                            <td colspan="4" class="subtotal-lbl">Subtotal Phase 1:</td>
+                            <td class="subtotal-val"
+                                th:text="${#numbers.formatDecimal(quote.firstPaymentTotal, 1, 'COMMA', 2, 'POINT')}">
+                                0.00</td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="5" class="section-divider">Phase 2: After Approval</td>
+                        </tr>
+                        <tr>
+                            <td class="num-cell">10</td>
+                            <td class="desc-cell">Investment Balance (90%)</td>
+                            <td class="rate-cell"
+                                th:text="${#numbers.formatDecimal(quote.totalInvestment, 1, 'COMMA', 2, 'POINT')}">
+                                270,000.00</td>
+                            <td class="qty-cell">90%</td>
+                            <td class="amt-cell"
+                                th:text="${#numbers.formatDecimal(quote.totalInvestment * (1 - quote.advancePaymentRate), 1, 'COMMA', 2, 'POINT')}">
+                                243,000.00</td>
+                        </tr>
+                        <tr>
+                            <td class="num-cell">11</td>
+                            <td class="desc-cell" th:text="${'Govt Fee - ' + quote.govtFeeDescription}">Govt Fee</td>
+                            <td class="rate-cell"
+                                th:text="${#numbers.formatDecimal(quote.govtFeeBase, 1, 'COMMA', 2, 'POINT')}">50,000.00
+                            </td>
+                            <td class="qty-cell">1</td>
+                            <td class="amt-cell"
+                                th:text="${#numbers.formatDecimal(quote.govtFeeBase, 1, 'COMMA', 2, 'POINT')}">50,000.00
+                            </td>
+                        </tr>
+                        <tr th:if="${quote.govtFeeAdditionalQty > 0}">
+                            <td class="num-cell">12</td>
+                            <td class="desc-cell">Additional Dependent Fee</td>
+                            <td class="rate-cell"
+                                th:text="${#numbers.formatDecimal(quote.govtFeeAdditionalRate, 1, 'COMMA', 2, 'POINT')}">
+                                25,000.00</td>
+                            <td class="qty-cell" th:text="${quote.govtFeeAdditionalQty}">0</td>
+                            <td class="amt-cell"
+                                th:text="${#numbers.formatDecimal(quote.govtFeeAdditionalRate * quote.govtFeeAdditionalQty, 1, 'COMMA', 2, 'POINT')}">
+                                0.00</td>
+                        </tr>
+                        <tr>
+                            <td class="num-cell">13</td>
+                            <td class="desc-cell">Phase 2 Bank Charges & VAT</td>
+                            <td class="rate-cell">-</td>
+                            <td class="qty-cell">1</td>
+                            <td class="amt-cell"
+                                th:text="${#numbers.formatDecimal(quote.bankChargesAndVat2, 1, 'COMMA', 2, 'POINT')}">
+                                4,303.62</td>
+                        </tr>
+                        <tr class="subtotal-row">
+                            <td colspan="4" class="subtotal-lbl">Subtotal Phase 2:</td>
+                            <td class="subtotal-val"
+                                th:text="${#numbers.formatDecimal(quote.secondPaymentTotal, 1, 'COMMA', 2, 'POINT')}">
+                                0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="grand-total-container">
+                    <div class="total-msg">
+                        Thank you for considering our services. <br>
+                        This estimate is based on the current regulations.
+                    </div>
+                    <div class="total-val-box">
+                        <span class="total-label">Grand Total Investment</span>
+                        <div class="total-amount"
+                            th:text="${'USD ' + #numbers.formatDecimal(quote.totalAmount, 1, 'COMMA', 2, 'POINT')}">USD
+                            0.00</div>
+                    </div>
+                </div>
+
+                <div class="disclaimer-premium">
+                    <h4>Important Notice</h4>
+                    <p>The aforementioned figures are professional estimates. Actual amounts may vary slightly due to
+                        official government changes or currency fluctuations during the bank transfer process. Clients
+                        are advised to confirm final figures before wire transfers.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
