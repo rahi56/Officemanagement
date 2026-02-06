@@ -2,570 +2,866 @@
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
 
 <head>
-    <title>Investment Quotation - Office Management</title>
+    <title>Investment Quotation</title>
+
 </head>
 
 <body>
     <div th:fragment="content">
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
-
-            :root {
-                --primary-gold: #c5a044;
-                --primary-dark: #0f172a;
-                --secondary-dark: #1e293b;
-                --border-color: #e2e8f0;
-                --bg-light: #f8fafc;
-                --text-main: #1e293b;
-                --text-muted: #64748b;
+            body {
+                font-family: 'Segoe UI', Arial, sans-serif;
+                margin: 0;
+                padding: 20px;
+                background: #f5f5f5;
             }
 
-            .quote-wrapper {
-                background: #f1f5f9;
-                padding: 40px 20px;
-                min-height: 100vh;
-                font-family: 'Outfit', sans-serif;
-            }
-
-            .quote-actions {
-                max-width: 1000px;
-                margin: 0 auto 24px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            .btn-action {
-                padding: 10px 20px;
-                border-radius: 8px;
-                font-weight: 600;
-                text-decoration: none;
-                transition: all 0.2s;
-                cursor: pointer;
-            }
-
-            .btn-back {
-                color: var(--text-muted);
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }
-
-            .btn-back:hover {
-                color: var(--primary-dark);
-            }
-
-            .btn-print-premium {
-                background: var(--primary-dark);
-                color: white;
-                border: none;
-                box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
-            }
-
-            .btn-print-premium:hover {
-                transform: translateY(-1px);
-                box-shadow: 0 6px 16px rgba(15, 23, 42, 0.2);
-            }
-
-            .quote-card {
-                background: white;
-                max-width: 1000px;
+            .container {
+                max-width: 1200px;
                 margin: 0 auto;
-                padding: 60px;
-                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
-                border-radius: 2px;
-                position: relative;
-                overflow: hidden;
+                background: white;
+                padding: 20px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             }
 
-            .quote-card::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 6px;
-                background: linear-gradient(to right, var(--primary-gold), #ecc94b);
-            }
-
-            .brand-header {
+            .header {
                 display: flex;
                 justify-content: space-between;
                 align-items: flex-start;
-                margin-bottom: 60px;
+                margin-bottom: 20px;
+                padding-bottom: 20px;
+                border-bottom: 1px solid #ddd;
             }
 
-            .brand-logo h2 {
-                margin: 0;
-                font-size: 2rem;
-                font-weight: 800;
-                letter-spacing: -1px;
-                color: var(--primary-dark);
-                text-transform: uppercase;
+            .title {
+                font-size: 24px;
+                font-weight: bold;
+                color: #1a237e;
             }
 
-            .brand-logo p {
-                margin: 5px 0 0;
-                color: var(--primary-gold);
-                font-weight: 600;
-                font-size: 0.85rem;
-                letter-spacing: 1px;
-                text-transform: uppercase;
+            .ref {
+                color: #666;
+                font-size: 14px;
+                margin-top: 5px;
             }
 
-            .quote-badge {
+            .date {
                 text-align: right;
+                color: #666;
+                font-size: 14px;
             }
 
-            .quote-badge h1 {
-                margin: 0;
-                font-size: 3rem;
-                font-weight: 200;
-                color: var(--primary-dark);
-                line-height: 1;
-                margin-bottom: 10px;
+            .client-info {
+                margin-bottom: 20px;
+                padding: 10px;
+                background: #f8f9fa;
+                border-left: 4px solid #1a237e;
             }
 
-            .quote-info-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 40px;
-                margin-bottom: 50px;
-                padding-bottom: 30px;
-                border-bottom: 1px solid var(--border-color);
+            .table-wrapper {
+                overflow-x: auto;
+                margin: 20px 0;
             }
 
-            .info-block label {
-                display: block;
-                font-size: 0.75rem;
-                text-transform: uppercase;
-                letter-spacing: 1.5px;
-                color: var(--text-muted);
-                margin-bottom: 12px;
-                font-weight: 700;
-            }
-
-            .info-block .val-main {
-                font-size: 1.25rem;
-                font-weight: 700;
-                color: var(--primary-dark);
-                margin-bottom: 4px;
-            }
-
-            .info-block .val-sub {
-                font-size: 0.95rem;
-                color: var(--text-muted);
-            }
-
-            .premium-table {
+            table {
                 width: 100%;
-                border-collapse: separate;
-                border-spacing: 0;
-                margin-bottom: 30px;
+                border-collapse: collapse;
+                font-size: 14px;
             }
 
-            .premium-table th {
-                background: var(--bg-light);
-                color: var(--primary-dark);
-                padding: 16px 20px;
-                font-size: 0.8rem;
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 1px;
+            th {
+                background: #1a237e;
+                color: white;
+                padding: 10px;
                 text-align: left;
-                border-bottom: 2px solid var(--primary-dark);
-            }
-
-            .premium-table td {
-                padding: 16px 20px;
-                border-bottom: 1px solid var(--border-color);
-                vertical-align: middle;
-            }
-
-            .section-divider {
-                background: var(--primary-dark);
-                color: white;
-                font-weight: 700;
-                font-size: 0.85rem;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-                padding: 12px 20px !important;
-            }
-
-            .num-cell {
-                width: 40px;
-                color: var(--text-muted);
-                font-weight: 500;
-            }
-
-            .desc-cell {
-                font-weight: 500;
-            }
-
-            .rate-cell {
-                text-align: right;
-                color: var(--text-muted);
-                width: 140px;
-            }
-
-            .qty-cell {
-                text-align: center;
-                width: 80px;
-            }
-
-            .amt-cell {
-                text-align: right;
-                font-weight: 700;
-                color: var(--primary-dark);
-                width: 160px;
-            }
-
-            .subtotal-row td {
-                background: var(--bg-light);
-                border-top: 1px solid var(--primary-dark);
-                padding: 20px;
-            }
-
-            .subtotal-lbl {
-                text-align: right;
-                font-weight: 700;
-                text-transform: uppercase;
-                font-size: 0.85rem;
-            }
-
-            .subtotal-val {
-                text-align: right;
-                font-size: 1.2rem;
-                font-weight: 800;
-                color: var(--primary-dark);
-            }
-
-            .grand-total-container {
-                margin-top: 50px;
-                background: var(--primary-dark);
-                border-radius: 8px;
-                padding: 40px;
-                color: white;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2);
-            }
-
-            .total-msg {
-                font-size: 1.1rem;
-                font-weight: 300;
-                opacity: 0.8;
-            }
-
-            .total-val-box {
-                text-align: right;
-            }
-
-            .total-label {
-                font-size: 0.8rem;
-                text-transform: uppercase;
-                letter-spacing: 2px;
-                margin-bottom: 8px;
-                display: block;
                 font-weight: 600;
+                border: 1px solid #ddd;
             }
 
-            .total-amount {
-                font-size: 3rem;
-                font-weight: 800;
-                line-height: 1;
-                color: var(--primary-gold);
+            td {
+                padding: 8px 10px;
+                border: 1px solid #ddd;
+                vertical-align: top;
             }
 
-            .disclaimer-premium {
-                margin-top: 60px;
-                padding: 30px;
-                background: var(--bg-light);
-                border-radius: 12px;
-                border-left: 4px solid var(--primary-gold);
+            th:nth-child(1),
+            td:nth-child(1) {
+                text-align: center;
+                width: 40px;
             }
 
-            .disclaimer-premium h4 {
-                margin: 0 0 10px;
-                font-size: 0.9rem;
-                color: var(--primary-dark);
-                text-transform: uppercase;
-                letter-spacing: 1px;
+            th:nth-child(2),
+            td:nth-child(2) {
+                text-align: left;
             }
 
-            .disclaimer-premium p {
-                margin: 0;
-                font-size: 0.85rem;
-                color: var(--text-muted);
-                line-height: 1.6;
+            th:nth-child(3),
+            td:nth-child(3) {
+                text-align: right;
+            }
+
+            th:nth-child(4),
+            td:nth-child(4) {
+                text-align: center;
+            }
+
+            th:nth-child(5),
+            td:nth-child(5) {
+                text-align: right;
+            }
+
+            .amount {
+                font-variant-numeric: tabular-nums;
+            }
+
+            tr:nth-child(even) {
+                background: #f8f9fa;
+            }
+
+            tr:hover {
+                background: #e8eaf6;
+            }
+
+            .section-header {
+                background: #3949ab;
+                color: white;
+                font-weight: bold;
+            }
+
+            .total-row {
+                background: #e8eaf6;
+                font-weight: bold;
+            }
+
+            .grand-total {
+                background: #1a237e;
+                color: white;
+                font-size: 16px;
+            }
+
+            .actions {
+                margin-top: 20px;
+                padding: 15px;
+                background: #f8f9fa;
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .btn {
+                padding: 8px 16px;
+                border: 1px solid #1a237e;
+                background: white;
+                color: #1a237e;
+                cursor: pointer;
+                font-size: 14px;
+                border-radius: 4px;
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+            }
+
+            .btn:hover {
+                background: #1a237e;
+                color: white;
+            }
+
+            .btn-edit {
+                border-color: #ff9800;
+                color: #ff9800;
+            }
+
+            .btn-edit:hover {
+                background: #ff9800;
+                color: white;
+            }
+
+            .btn-save {
+                border-color: #4caf50;
+                color: #4caf50;
+            }
+
+            .btn-save:hover {
+                background: #4caf50;
+                color: white;
+            }
+
+            .btn-download {
+                border-color: #2196f3;
+                color: #2196f3;
+            }
+
+            .btn-download:hover {
+                background: #2196f3;
+                color: white;
+            }
+
+            .editable {
+                cursor: pointer;
+                position: relative;
+            }
+
+            .editable:hover {
+                background: #ffecb3;
+            }
+
+            .editable:hover::after {
+                content: '✏️';
+                position: absolute;
+                right: 5px;
+                font-size: 12px;
+                opacity: 0.5;
+            }
+
+            .editing {
+                background: #fff9c4 !important;
+                padding: 0 !important;
+            }
+
+            .edit-input {
+                width: 100%;
+                height: 100%;
+                padding: 8px 10px;
+                border: 2px solid #2196f3;
+                font-family: inherit;
+                font-size: inherit;
+                box-sizing: border-box;
+                background: white;
+                outline: none;
+            }
+
+            .footer {
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid #ddd;
+                font-size: 12px;
+                color: #666;
+            }
+
+            .btn-sm {
+                padding: 2px 6px;
+                font-size: 12px;
+                margin: 0 2px;
+                border-radius: 3px;
+            }
+
+            .btn-danger-sm {
+                border-color: #ef5350;
+                color: #ef5350;
+            }
+
+            .btn-danger-sm:hover {
+                background: #ef5350;
+                color: white;
+            }
+
+            .actions-cell {
+                text-align: center;
+                white-space: nowrap;
             }
 
             @media print {
-                .quote-wrapper {
-                    padding: 0;
+                @page {
+                    size: A4;
+                    margin: 15mm 5mm;
+                }
+
+                html,
+                body {
                     background: white;
+                    margin: 0;
+                    padding: 0;
+                    width: 100%;
                 }
 
-                .quote-actions,
-                .btn-action {
-                    display: none !important;
+                body {
+                    font-family: 'Segoe UI', Arial, sans-serif;
+                    color: black;
+                    font-size: 10pt;
+                    line-height: 1.3;
                 }
 
-                .quote-card {
+                .container {
                     box-shadow: none;
-                    padding: 40px;
-                    max-width: 100%;
+                    margin: 0;
+                    padding: 0;
+                    width: 100%;
+                    max-width: none;
                     border: none;
                 }
 
-                .grand-total-container {
+                .app-container {
+                    display: block;
+                }
+
+                .sidebar,
+                .actions,
+                .actions-cell,
+                .actions-header {
+                    display: none !important;
+                }
+
+                .header {
+                    margin-bottom: 10px;
+                    padding-bottom: 10px;
+                    border-bottom: 1px solid #eee;
+                }
+
+                .title {
+                    font-size: 18pt;
+                    margin-bottom: 5px;
+                    color: #1a237e !important;
                     -webkit-print-color-adjust: exact;
-                    background: #0f172a !important;
+                    print-color-adjust: exact;
+                }
+
+                .ref,
+                .date,
+                .header div {
+                    font-size: 10pt;
+                }
+
+                .client-info {
+                    margin-bottom: 15px;
+                    padding: 8px;
+                    font-size: 10pt;
+                    background: #f8f9fa !important;
+                    border-left: 3px solid #1a237e !important;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+
+                .main-content {
+                    padding: 0 !important;
+                    margin: 0 !important;
+                }
+
+                .table-wrapper {
+                    overflow: visible;
+                    margin: 10px 0;
+                }
+
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    font-size: 9pt;
+                }
+
+                th,
+                td {
+                    padding: 6px 8px;
+                    border: 1px solid #ccc;
+                }
+
+                th {
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                    background-color: #1a237e !important;
                     color: white !important;
                 }
 
-                .section-divider {
+                .section-header td {
                     -webkit-print-color-adjust: exact;
-                    background: #0f172a !important;
+                    print-color-adjust: exact;
+                    background-color: #3949ab !important;
                     color: white !important;
+                    font-weight: bold;
+                }
+
+                .total-row td {
+                    background-color: #f8f9fa !important;
+                    font-weight: bold;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+
+                .grand-total td {
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                    background-color: #1a237e !important;
+                    color: white !important;
+                    padding: 8px;
+                    font-size: 12pt;
+                }
+
+                .footer {
+                    margin-top: 15px;
+                    padding-top: 10px;
+                    font-size: 8pt;
+                    color: #666;
+                    border-top: 1px solid #eee;
+                }
+
+                p {
+                    margin: 4px 0;
                 }
             }
         </style>
-
-        <div class="quote-wrapper">
-            <div class="quote-actions">
-                <a th:href="@{/quotations}" class="btn-action btn-back">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 12H5M12 19l-7-7 7-7" />
-                    </svg>
-                    Back to Quotations
-                </a>
-                <button class="btn-action btn-print-premium" onclick="window.print()">Print / Export PDF</button>
+        <div class="container">
+            <!-- Header -->
+            <div class="header">
+                <div>
+                    <div class="title">INVESTMENT QUOTATION</div>
+                    <div class="ref" th:text="'Ref: INV-' + ${#numbers.formatInteger(quote.id, 8)}">REF-00000001</div>
+                    <div style="margin-top: 10px; font-size: 14px; color: #666;">
+                        <div
+                            th:text="${not #strings.isEmpty(quote.clientName) ? quote.clientName : (quote.client != null ? quote.client.name : 'Client Name')}">
+                            Client Name</div>
+                        <div th:text="${quote.familyStructure}">Family Structure</div>
+                    </div>
+                </div>
+                <div class="date">
+                    <div>Date: <span th:text="${#temporals.format(quote.createdAt, 'dd/MM/yyyy')}">18/01/2026</span>
+                    </div>
+                    <div>Valid until: <span
+                            th:text="${#temporals.format(quote.createdAt.plusDays(30), 'dd/MM/yyyy')}">17/02/2026</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="quote-card" id="printableArea">
-                <div class="brand-header">
-                    <div class="brand-logo">
-                        <h2>KiteGlobal KG</h2>
-                        <p>Investment Migration Solutions</p>
-                    </div>
-                    <div class="quote-badge">
-                        <h1>Quotation</h1>
-                        <span th:text="'Ref: INV-' + ${#numbers.formatInteger(quote.id, 8)}"
-                            style="font-family: monospace; font-size: 1rem; color: var(--text-muted); font-weight: 600;">REF-00000001</span>
-                    </div>
-                </div>
+            <!-- Client Info -->
+            <div class="client-info">
+                <strong>Program:</strong> Citizenship by Investment |
+                <strong>Processing:</strong> Standard |
+                <strong>Family Members:</strong> 7 persons
+            </div>
 
-                <div class="quote-info-grid">
-                    <div class="info-block">
-                        <label>Quoted To</label>
-                        <div class="val-main"
-                            th:text="${not #strings.isEmpty(quote.clientName) ? quote.clientName : (quote.client != null ? quote.client.name : 'Valued Interest')}">
-                            Name</div>
-                        <div class="val-sub" th:text="${quote.familyStructure}">Structure</div>
-                    </div>
-                    <div class="info-block" style="text-align: right;">
-                        <label>Issue Date</label>
-                        <div class="val-main" th:text="${#temporals.format(quote.createdAt, 'MMMM dd, yyyy')}">Date
-                        </div>
-                        <div class="val-sub">Valid for 30 Days</div>
-                    </div>
-                </div>
+            <!-- Actions -->
+            <div class="actions">
+                <button class="btn" onclick="window.history.back()">← Back</button>
+                <button class="btn btn-edit" onclick="enableEditing()">✏️ Edit</button>
+                <button class="btn btn-save" onclick="saveQuotation()" style="display:none" id="saveBtn">💾
+                    Save</button>
+                <button class="btn btn-download" onclick="window.print()">📄 Print/PDF</button>
+            </div>
 
-                <table class="premium-table">
+            <!-- Quotation Table -->
+            <div class="table-wrapper">
+                <table id="quotationTable">
                     <thead>
                         <tr>
-                            <th class="num-cell">#</th>
-                            <th class="desc-cell">Description</th>
-                            <th class="rate-cell">Rate (USD)</th>
-                            <th class="qty-cell">Qty</th>
-                            <th class="amt-cell">Amount</th>
+                            <th width="50">#</th>
+                            <th>Description</th>
+                            <th width="120">Rate (USD)</th>
+                            <th width="100">Qty</th>
+                            <th width="120">Amount (USD)</th>
+                            <th width="80" class="actions-header">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td colspan="5" class="section-divider">Phase 1: Before Approval</td>
-                        </tr>
-                        <tr>
-                            <td class="num-cell">01</td>
-                            <td class="desc-cell">Application Fee (Standard)</td>
-                            <td class="rate-cell"
-                                th:text="${#numbers.formatDecimal(quote.appFeeRate, 1, 'COMMA', 2, 'POINT')}">1,500.00
-                            </td>
-                            <td class="qty-cell" th:text="${quote.appFeeQty}">1</td>
-                            <td class="amt-cell"
-                                th:text="${#numbers.formatDecimal(quote.appFeeRate * quote.appFeeQty, 1, 'COMMA', 2, 'POINT')}">
-                                1,500.00</td>
-                        </tr>
-                        <tr>
-                            <td class="num-cell">02</td>
-                            <td class="desc-cell">Processing Fee (17yrs+)</td>
-                            <td class="rate-cell"
-                                th:text="${#numbers.formatDecimal(quote.procFee17Rate, 1, 'COMMA', 2, 'POINT')}">
-                                1,500.00</td>
-                            <td class="qty-cell" th:text="${quote.procFee17Qty}">1</td>
-                            <td class="amt-cell"
-                                th:text="${#numbers.formatDecimal(quote.procFee17Rate * quote.procFee17Qty, 1, 'COMMA', 2, 'POINT')}">
-                                1,500.00</td>
-                        </tr>
-                        <tr th:if="${quote.procFee0Qty > 0}">
-                            <td class="num-cell">03</td>
-                            <td class="desc-cell">Processing Fee (0-16yrs)</td>
-                            <td class="rate-cell"
-                                th:text="${#numbers.formatDecimal(quote.procFee0Rate, 1, 'COMMA', 2, 'POINT')}">500.00
-                            </td>
-                            <td class="qty-cell" th:text="${quote.procFee0Qty}">0</td>
-                            <td class="amt-cell"
-                                th:text="${#numbers.formatDecimal(quote.procFee0Rate * quote.procFee0Qty, 1, 'COMMA', 2, 'POINT')}">
-                                0.00</td>
-                        </tr>
-                        <tr>
-                            <td class="num-cell">04</td>
-                            <td class="desc-cell">Due Diligence Fee (17yrs+)</td>
-                            <td class="rate-cell"
-                                th:text="${#numbers.formatDecimal(quote.ddFee17Rate, 1, 'COMMA', 2, 'POINT')}">5,000.00
-                            </td>
-                            <td class="qty-cell" th:text="${quote.ddFee17Qty}">1</td>
-                            <td class="amt-cell"
-                                th:text="${#numbers.formatDecimal(quote.ddFee17Rate * quote.ddFee17Qty, 1, 'COMMA', 2, 'POINT')}">
-                                5,000.00</td>
-                        </tr>
-                        <tr th:if="${quote.ddFeeNonAppQty > 0}">
-                            <td class="num-cell">05</td>
-                            <td class="desc-cell">Due Diligence Fee (Non-Applicant)</td>
-                            <td class="rate-cell"
-                                th:text="${#numbers.formatDecimal(quote.ddFeeNonAppRate, 1, 'COMMA', 2, 'POINT')}">
-                                8,000.00</td>
-                            <td class="qty-cell" th:text="${quote.ddFeeNonAppQty}">0</td>
-                            <td class="amt-cell"
-                                th:text="${#numbers.formatDecimal(quote.ddFeeNonAppRate * quote.ddFeeNonAppQty, 1, 'COMMA', 2, 'POINT')}">
-                                0.00</td>
-                        </tr>
-                        <tr>
-                            <td class="num-cell">06</td>
-                            <td class="desc-cell">Interview Fee (per person)</td>
-                            <td class="rate-cell"
-                                th:text="${#numbers.formatDecimal(quote.interviewFeeRate, 1, 'COMMA', 2, 'POINT')}">
-                                1,000.00</td>
-                            <td class="qty-cell" th:text="${quote.interviewFeeQty}">1</td>
-                            <td class="amt-cell"
-                                th:text="${#numbers.formatDecimal(quote.interviewFeeRate * quote.interviewFeeQty, 1, 'COMMA', 2, 'POINT')}">
-                                1,000.00</td>
-                        </tr>
-                        <tr>
-                            <td class="num-cell">07</td>
-                            <td class="desc-cell">Legal & Professional Fee</td>
-                            <td class="rate-cell"
-                                th:text="${#numbers.formatDecimal(quote.legalFee, 1, 'COMMA', 2, 'POINT')}">6,000.00
-                            </td>
-                            <td class="qty-cell">1</td>
-                            <td class="amt-cell"
-                                th:text="${#numbers.formatDecimal(quote.legalFee, 1, 'COMMA', 2, 'POINT')}">6,000.00
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="num-cell">08</td>
-                            <td class="desc-cell">Advance Payment (10% Investment)</td>
-                            <td class="rate-cell"
-                                th:text="${#numbers.formatDecimal(quote.totalInvestment, 1, 'COMMA', 2, 'POINT')}">
-                                270,000.00</td>
-                            <td class="qty-cell">10%</td>
-                            <td class="amt-cell"
-                                th:text="${#numbers.formatDecimal(quote.totalInvestment * quote.advancePaymentRate, 1, 'COMMA', 2, 'POINT')}">
-                                27,000.00</td>
-                        </tr>
-                        <tr>
-                            <td class="num-cell">09</td>
-                            <td class="desc-cell">Bank Charges & VAT</td>
-                            <td class="rate-cell">-</td>
-                            <td class="qty-cell">1</td>
-                            <td class="amt-cell"
-                                th:text="${#numbers.formatDecimal(quote.bankChargesAndVat1, 1, 'COMMA', 2, 'POINT')}">
-                                603.68</td>
-                        </tr>
-                        <tr class="subtotal-row">
-                            <td colspan="4" class="subtotal-lbl">Subtotal Phase 1:</td>
-                            <td class="subtotal-val"
-                                th:text="${#numbers.formatDecimal(quote.firstPaymentTotal, 1, 'COMMA', 2, 'POINT')}">
-                                0.00</td>
+                        <!-- Phase 1 -->
+                        <tr class="section-header">
+                            <td colspan="6">PHASE 1: BEFORE APPROVAL</td>
                         </tr>
 
                         <tr>
-                            <td colspan="5" class="section-divider">Phase 2: After Approval</td>
-                        </tr>
-                        <tr>
-                            <td class="num-cell">10</td>
-                            <td class="desc-cell">Investment Balance (90%)</td>
-                            <td class="rate-cell"
-                                th:text="${#numbers.formatDecimal(quote.totalInvestment, 1, 'COMMA', 2, 'POINT')}">
-                                270,000.00</td>
-                            <td class="qty-cell">90%</td>
-                            <td class="amt-cell"
-                                th:text="${#numbers.formatDecimal(quote.totalInvestment * (1 - quote.advancePaymentRate), 1, 'COMMA', 2, 'POINT')}">
-                                243,000.00</td>
-                        </tr>
-                        <tr>
-                            <td class="num-cell">11</td>
-                            <td class="desc-cell" th:text="${'Govt Fee - ' + quote.govtFeeDescription}">Govt Fee</td>
-                            <td class="rate-cell"
-                                th:text="${#numbers.formatDecimal(quote.govtFeeBase, 1, 'COMMA', 2, 'POINT')}">50,000.00
-                            </td>
-                            <td class="qty-cell">1</td>
-                            <td class="amt-cell"
-                                th:text="${#numbers.formatDecimal(quote.govtFeeBase, 1, 'COMMA', 2, 'POINT')}">50,000.00
+                            <td>1</td>
+                            <td class="editable" onclick="editCell(this, 'desc')">Application Fee (per person)</td>
+                            <td class="editable" onclick="editCell(this, 'rate')" data-value="1500.00">1,500.00</td>
+                            <td class="editable" onclick="editCell(this, 'qty')" data-value="7">7</td>
+                            <td class="amount">10,500.00</td>
+                            <td class="actions-cell">
+                                <button class="btn btn-sm" onclick="insertRow(this)">+</button>
+                                <button class="btn btn-sm btn-danger-sm" onclick="deleteRow(this)">-</button>
                             </td>
                         </tr>
-                        <tr th:if="${quote.govtFeeAdditionalQty > 0}">
-                            <td class="num-cell">12</td>
-                            <td class="desc-cell">Additional Dependent Fee</td>
-                            <td class="rate-cell"
-                                th:text="${#numbers.formatDecimal(quote.govtFeeAdditionalRate, 1, 'COMMA', 2, 'POINT')}">
-                                25,000.00</td>
-                            <td class="qty-cell" th:text="${quote.govtFeeAdditionalQty}">0</td>
-                            <td class="amt-cell"
-                                th:text="${#numbers.formatDecimal(quote.govtFeeAdditionalRate * quote.govtFeeAdditionalQty, 1, 'COMMA', 2, 'POINT')}">
-                                0.00</td>
-                        </tr>
+
                         <tr>
-                            <td class="num-cell">13</td>
-                            <td class="desc-cell">Phase 2 Bank Charges & VAT</td>
-                            <td class="rate-cell">-</td>
-                            <td class="qty-cell">1</td>
-                            <td class="amt-cell"
-                                th:text="${#numbers.formatDecimal(quote.bankChargesAndVat2, 1, 'COMMA', 2, 'POINT')}">
-                                4,303.62</td>
+                            <td>2</td>
+                            <td class="editable" onclick="editCell(this, 'desc')">Processing Fee - 17yrs & above</td>
+                            <td class="editable" onclick="editCell(this, 'rate')" data-value="1500.00">1,500.00</td>
+                            <td class="editable" onclick="editCell(this, 'qty')" data-value="3">3</td>
+                            <td class="amount">4,500.00</td>
+                            <td class="actions-cell">
+                                <button class="btn btn-sm" onclick="insertRow(this)">+</button>
+                                <button class="btn btn-sm btn-danger-sm" onclick="deleteRow(this)">-</button>
+                            </td>
                         </tr>
-                        <tr class="subtotal-row">
-                            <td colspan="4" class="subtotal-lbl">Subtotal Phase 2:</td>
-                            <td class="subtotal-val"
-                                th:text="${#numbers.formatDecimal(quote.secondPaymentTotal, 1, 'COMMA', 2, 'POINT')}">
-                                0.00</td>
+
+                        <tr>
+                            <td>3</td>
+                            <td class="editable" onclick="editCell(this, 'desc')">Processing Fee - 0-16yrs</td>
+                            <td class="editable" onclick="editCell(this, 'rate')" data-value="500.00">500.00</td>
+                            <td class="editable" onclick="editCell(this, 'qty')" data-value="4">4</td>
+                            <td class="amount">2,000.00</td>
+                            <td class="actions-cell">
+                                <button class="btn btn-sm" onclick="insertRow(this)">+</button>
+                                <button class="btn btn-sm btn-danger-sm" onclick="deleteRow(this)">-</button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>4</td>
+                            <td class="editable" onclick="editCell(this, 'desc')">Due Diligence Fee - 17yrs & above</td>
+                            <td class="editable" onclick="editCell(this, 'rate')" data-value="5000.00">5,000.00</td>
+                            <td class="editable" onclick="editCell(this, 'qty')" data-value="3">3</td>
+                            <td class="amount">15,000.00</td>
+                            <td class="actions-cell">
+                                <button class="btn btn-sm" onclick="insertRow(this)">+</button>
+                                <button class="btn btn-sm btn-danger-sm" onclick="deleteRow(this)">-</button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>5</td>
+                            <td class="editable" onclick="editCell(this, 'desc')">Interview Fee (per person)</td>
+                            <td class="editable" onclick="editCell(this, 'rate')" data-value="1000.00">1,000.00</td>
+                            <td class="editable" onclick="editCell(this, 'qty')" data-value="3">3</td>
+                            <td class="amount">3,000.00</td>
+                            <td class="actions-cell">
+                                <button class="btn btn-sm" onclick="insertRow(this)">+</button>
+                                <button class="btn btn-sm btn-danger-sm" onclick="deleteRow(this)">-</button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>6</td>
+                            <td class="editable" onclick="editCell(this, 'desc')">Legal & Professional Fee</td>
+                            <td class="editable" onclick="editCell(this, 'rate')" data-value="6000.00">6,000.00</td>
+                            <td class="editable" onclick="editCell(this, 'qty')" data-value="1">1</td>
+                            <td class="amount">6,000.00</td>
+                            <td class="actions-cell">
+                                <button class="btn btn-sm" onclick="insertRow(this)">+</button>
+                                <button class="btn btn-sm btn-danger-sm" onclick="deleteRow(this)">-</button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>7</td>
+                            <td class="editable" onclick="editCell(this, 'desc')">Document Preparation Fees</td>
+                            <td class="editable" onclick="editCell(this, 'rate')" data-value="2000.00">2,000.00</td>
+                            <td>1</td>
+                            <td class="amount">2,000.00</td>
+                            <td class="actions-cell">
+                                <button class="btn btn-sm" onclick="insertRow(this)">+</button>
+                                <button class="btn btn-sm btn-danger-sm" onclick="deleteRow(this)">-</button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>8</td>
+                            <td class="editable" onclick="editCell(this, 'desc')">Processing Fees</td>
+                            <td class="editable" onclick="editCell(this, 'rate')" data-value="2000.00">2,000.00</td>
+                            <td>1</td>
+                            <td class="amount">2,000.00</td>
+                            <td class="actions-cell">
+                                <button class="btn btn-sm" onclick="insertRow(this)">+</button>
+                                <button class="btn btn-sm btn-danger-sm" onclick="deleteRow(this)">-</button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>9</td>
+                            <td class="editable" onclick="editCell(this, 'desc')">Advance Payment (10% Investment)</td>
+                            <td class="editable" onclick="editCell(this, 'rate')" data-value="270000.00">270,000.00</td>
+                            <td class="editable" onclick="editCell(this, 'qty')" data-value="0.10">10%</td>
+                            <td class="amount">27,000.00</td>
+                            <td class="actions-cell">
+                                <button class="btn btn-sm" onclick="insertRow(this)">+</button>
+                                <button class="btn btn-sm btn-danger-sm" onclick="deleteRow(this)">-</button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>10</td>
+                            <td class="editable" onclick="editCell(this, 'desc')">Bank Charges & VAT (Phase 1)</td>
+                            <td>-</td>
+                            <td>1</td>
+                            <td class="amount">667.50</td>
+                            <td class="actions-cell">
+                                <button class="btn btn-sm" onclick="insertRow(this)">+</button>
+                                <button class="btn btn-sm btn-danger-sm" onclick="deleteRow(this)">-</button>
+                            </td>
+                        </tr>
+
+                        <tr class="total-row">
+                            <td colspan="4" style="text-align:right;"><strong>Total Phase 1:</strong></td>
+                            <td class="amount"><strong id="phase1Total">72,667.50</strong></td>
+                            <td class="actions-cell"></td>
+                        </tr>
+
+                        <!-- Phase 2 -->
+                        <tr class="section-header">
+                            <td colspan="6">PHASE 2: AFTER APPROVAL</td>
+                        </tr>
+
+                        <tr>
+                            <td>11</td>
+                            <td class="editable" onclick="editCell(this, 'desc')">Investment Balance (90%)</td>
+                            <td class="editable" onclick="editCell(this, 'rate')" data-value="270000.00">270,000.00</td>
+                            <td class="editable" onclick="editCell(this, 'qty')" data-value="0.90">90%</td>
+                            <td class="amount">243,000.00</td>
+                            <td class="actions-cell">
+                                <button class="btn btn-sm" onclick="insertRow(this)">+</button>
+                                <button class="btn btn-sm btn-danger-sm" onclick="deleteRow(this)">-</button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>12</td>
+                            <td class="editable" onclick="editCell(this, 'desc')">Government Fee - Family of 4</td>
+                            <td class="editable" onclick="editCell(this, 'rate')" data-value="50000.00">50,000.00</td>
+                            <td>1</td>
+                            <td class="amount">50,000.00</td>
+                            <td class="actions-cell">
+                                <button class="btn btn-sm" onclick="insertRow(this)">+</button>
+                                <button class="btn btn-sm btn-danger-sm" onclick="deleteRow(this)">-</button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>13</td>
+                            <td class="editable" onclick="editCell(this, 'desc')">Additional Dependent Fee</td>
+                            <td class="editable" onclick="editCell(this, 'rate')" data-value="25000.00">25,000.00</td>
+                            <td class="editable" onclick="editCell(this, 'qty')" data-value="3">3</td>
+                            <td class="amount">75,000.00</td>
+                            <td class="actions-cell">
+                                <button class="btn btn-sm" onclick="insertRow(this)">+</button>
+                                <button class="btn btn-sm btn-danger-sm" onclick="deleteRow(this)">-</button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>14</td>
+                            <td class="editable" onclick="editCell(this, 'desc')">Miscellaneous Fees (per person)</td>
+                            <td class="editable" onclick="editCell(this, 'rate')" data-value="450.00">450.00</td>
+                            <td class="editable" onclick="editCell(this, 'qty')" data-value="7">7</td>
+                            <td class="amount">3,150.00</td>
+                            <td class="actions-cell">
+                                <button class="btn btn-sm" onclick="insertRow(this)">+</button>
+                                <button class="btn btn-sm btn-danger-sm" onclick="deleteRow(this)">-</button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>15</td>
+                            <td class="editable" onclick="editCell(this, 'desc')">Courier Fees</td>
+                            <td class="editable" onclick="editCell(this, 'rate')" data-value="200.00">200.00</td>
+                            <td>1</td>
+                            <td class="amount">200.00</td>
+                            <td class="actions-cell">
+                                <button class="btn btn-sm" onclick="insertRow(this)">+</button>
+                                <button class="btn btn-sm btn-danger-sm" onclick="deleteRow(this)">-</button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>16</td>
+                            <td class="editable" onclick="editCell(this, 'desc')">Bank Charges & VAT (Phase 2)</td>
+                            <td>-</td>
+                            <td>1</td>
+                            <td class="amount">4,878.62</td>
+                            <td class="actions-cell">
+                                <button class="btn btn-sm" onclick="insertRow(this)">+</button>
+                                <button class="btn btn-sm btn-danger-sm" onclick="deleteRow(this)">-</button>
+                            </td>
+                        </tr>
+
+                        <tr class="total-row">
+                            <td colspan="4" style="text-align:right;"><strong>Total Phase 2:</strong></td>
+                            <td class="amount"><strong id="phase2Total">229,228.62</strong></td>
+                            <td class="actions-cell"></td>
+                        </tr>
+
+                        <!-- Grand Total -->
+                        <tr class="grand-total">
+                            <td colspan="4" style="text-align:right; font-size:16px;">
+                                <strong>GRAND TOTAL (USD):</strong>
+                            </td>
+                            <td class="amount" style="font-size:16px;">
+                                <strong id="grandTotal">301,896.12</strong>
+                            </td>
+                            <td class="actions-cell"></td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
 
-                <div class="grand-total-container">
-                    <div class="total-msg">
-                        Thank you for considering our services. <br>
-                        This estimate is based on the current regulations.
-                    </div>
-                    <div class="total-val-box">
-                        <span class="total-label">Grand Total Investment</span>
-                        <div class="total-amount"
-                            th:text="${'USD ' + #numbers.formatDecimal(quote.totalAmount, 1, 'COMMA', 2, 'POINT')}">USD
-                            0.00</div>
-                    </div>
-                </div>
-
-                <div class="disclaimer-premium">
-                    <h4>Important Notice</h4>
-                    <p>The aforementioned figures are professional estimates. Actual amounts may vary slightly due to
-                        official government changes or currency fluctuations during the bank transfer process. Clients
-                        are advised to confirm final figures before wire transfers.</p>
-                </div>
+            <!-- Footer -->
+            <div class="footer">
+                <p><strong>Notes:</strong> All amounts are in US Dollars. Phase 1 fees are payable upon application
+                    submission. Phase 2 fees are payable after approval. Bank charges are estimates and may vary.</p>
+                <p><strong>Disclaimer:</strong> These figures are estimates. Actual amounts may vary due to government
+                    fee changes or currency fluctuations.</p>
             </div>
         </div>
+
+        <script>
+            let editMode = false;
+
+            function enableEditing() {
+                editMode = true;
+                document.getElementById('saveBtn').style.display = 'inline-flex';
+                alert('Edit mode enabled. Click on any cell to edit.');
+            }
+
+            function editCell(cell, type) {
+                if (cell.querySelector('input')) return;
+
+                const currentText = cell.textContent.trim();
+                const originalValue = type === 'rate' || type === 'qty'
+                    ? currentText.replace(/[^0-9.-]/g, '')
+                    : currentText;
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'edit-input';
+                input.value = originalValue;
+
+                cell.classList.add('editing');
+                cell.innerHTML = '';
+                cell.appendChild(input);
+                input.focus();
+                input.select();
+
+                const updateValue = () => {
+                    let val = input.value;
+                    if (type === 'rate' || type === 'qty') {
+                        const numericVal = parseFloat(val.replace(/[^0-9.-]/g, '')) || 0;
+                        cell.setAttribute('data-value', numericVal);
+
+                        // For display, we still want the raw input while editing, 
+                        // but calculateRow needs the new value
+                        calculateRow(cell.closest('tr'));
+                    }
+                };
+
+                input.oninput = updateValue;
+
+                input.onblur = function () {
+                    let finalVal = this.value;
+                    if (type === 'rate' || type === 'qty') {
+                        const numericVal = parseFloat(finalVal.replace(/[^0-9.-]/g, '')) || 0;
+                        cell.textContent = numericVal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        if (type === 'qty' && finalVal.includes('%')) {
+                            cell.textContent = (numericVal * 100).toFixed(0) + '%';
+                        }
+                    } else {
+                        cell.textContent = finalVal;
+                    }
+                    cell.classList.remove('editing');
+                    calculateTotals();
+                };
+
+                input.onkeydown = function (e) {
+                    if (e.key === 'Enter') this.blur();
+                    if (e.key === 'Escape') {
+                        cell.textContent = currentText;
+                        cell.classList.remove('editing');
+                        calculateTotals();
+                    }
+                };
+            }
+
+            function calculateRow(row) {
+                const rateCell = row.cells[2];
+                const qtyCell = row.cells[3];
+                const amountCell = row.cells[4];
+
+                const getVal = (cell) => {
+                    const input = cell.querySelector('input');
+                    if (input) return parseFloat(input.value.replace(/[^0-9.-]/g, '')) || 0;
+                    return parseFloat(cell.textContent.replace(/[^0-9.-]/g, '')) || 0;
+                };
+
+                const getQtyVal = (cell) => {
+                    const input = cell.querySelector('input');
+                    let text = input ? input.value : cell.textContent;
+                    let val = parseFloat(text.replace(/[^0-9.-]/g, '')) || 0;
+                    if (text.includes('%')) val = val / 100;
+                    return val;
+                };
+
+                const rate = getVal(rateCell);
+                const qty = getQtyVal(qtyCell);
+
+                const amount = rate * qty;
+                amountCell.textContent = amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+                calculateTotals();
+            }
+
+            function calculateTotals() {
+                let phase1 = 0;
+                let phase2 = 0;
+                let inPhase2 = false;
+
+                const rows = document.querySelectorAll('#quotationTable tbody tr');
+                rows.forEach(row => {
+                    if (row.classList.contains('section-header')) {
+                        if (row.cells[0].textContent.includes('PHASE 2')) {
+                            inPhase2 = true;
+                        }
+                        return;
+                    }
+
+                    if (!row.classList.contains('total-row') && !row.classList.contains('grand-total')) {
+                        const amountCell = row.cells[4];
+                        const amount = parseFloat(amountCell.textContent.replace(/[^0-9.-]/g, '')) || 0;
+
+                        if (inPhase2) {
+                            phase2 += amount;
+                        } else {
+                            phase1 += amount;
+                        }
+                    }
+                });
+
+                document.getElementById('phase1Total').textContent = phase1.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                document.getElementById('phase2Total').textContent = phase2.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                const grandTotal = phase1 + phase2;
+                document.getElementById('grandTotal').textContent = grandTotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
+
+            function insertRow(btn) {
+                const row = btn.closest('tr');
+                const table = document.getElementById('quotationTable');
+                const newRow = table.insertRow(row.rowIndex + 1);
+
+                newRow.innerHTML = `
+                    <td></td>
+                    <td class="editable" onclick="editCell(this, 'desc')">New Item</td>
+                    <td class="editable" onclick="editCell(this, 'rate')">0.00</td>
+                    <td class="editable" onclick="editCell(this, 'qty')">1</td>
+                    <td class="amount">0.00</td>
+                    <td class="actions-cell">
+                        <button class="btn btn-sm" onclick="insertRow(this)">+</button>
+                        <button class="btn btn-sm btn-danger-sm" onclick="deleteRow(this)">-</button>
+                    </td>
+                `;
+
+                renumberRows();
+                if (typeof editMode !== 'undefined' && editMode) {
+                    // Keep edit mode logic if needed
+                }
+            }
+
+            function deleteRow(btn) {
+                if (confirm('Are you sure you want to delete this row?')) {
+                    const row = btn.closest('tr');
+                    row.remove();
+                    renumberRows();
+                    calculateTotals();
+                }
+            }
+
+            function renumberRows() {
+                const rows = document.querySelectorAll('#quotationTable tbody tr');
+                let count = 1;
+                rows.forEach(row => {
+                    if (!row.classList.contains('section-header') &&
+                        !row.classList.contains('total-row') &&
+                        !row.classList.contains('grand-total')) {
+                        row.cells[0].textContent = count++;
+                    }
+                });
+            }
+
+            // Initialize calculations
+            calculateTotals();
+            // Initial renumber to be safe?
+            renumberRows();
+        </script>
     </div>
 </body>
 
